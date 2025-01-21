@@ -11,7 +11,7 @@
     "package.json"
   ],
   "scripts": {
-    "start": "tsc && npx prisma generate",
+    "start": "tsc && prisma generate",
     "build": "tsc",
     "dev":"tsc -w",
     "package:publish": "./package.sh && cd package && npm publish"

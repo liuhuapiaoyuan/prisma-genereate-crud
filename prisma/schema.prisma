@@ -2,8 +2,8 @@ generator client {
   provider = "prisma-client-js"
 }
 
-generator class_validator {
-  provider = "node ./lib/generator.js"
+generator crud {
+  provider = "prisma-crud"
 }
 
 datasource db {
@@ -11,22 +11,52 @@ datasource db {
   url      = "file:./dev.db"
 }
 
+/// 用户模型
 model User {
-  id    Int     @id @default(autoincrement())
-  email String  @unique
-  name  String?
-  posts Post[]
+  /// 用户ID
+  id          Int     @id @default(autoincrement())
+  /// 用户邮箱
+  email       String  @unique
+  /// 用户名称
+  name        String?
+  /// 用户头像
+  avatar      String?
+  /// 用户简介
+  description String?
+  /// 用户状态(1=正常,2=禁用,3=待审核)
+  status      Int     @default(1)
+  /// 用户发布的文章
+  posts       Post[]
 }
 
+/// 文章模型
 model Post {
+  /// 文章ID
   id        Int      @id @default(autoincrement())
+  /// 创建时间
   createdAt DateTime @default(now())
+  /// 更新时间
   updatedAt DateTime @updatedAt
+  /// 文章标题
   title     String
+  /// 文章内容
   content   String?
+  /// 文章状态(1=草稿,2=已发布,3=已下架)
+  status    Int      @default(1)
+  /// 封面图片
+  image     String?
+  /// 文章图片列表
+  imageList String?
+  /// 附件列表
+  fileList  String?
+  /// 是否推荐
   published Boolean  @default(false)
+  /// 浏览次数
   viewCount Int      @default(0)
+  /// 文章作者
   author    User?    @relation(fields: [authorId], references: [id])
+  /// 作者ID
   authorId  Int?
+  /// 文章评分
   rating    Float
 }
