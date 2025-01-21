@@ -1,32 +1,35 @@
 import type { DMMF as PrismaDMMF } from '@prisma/generator-helper';
 import { FieldTypeStrategy } from './types';
-import { RelationFieldStrategy } from './strategies/relation';
-import { EnumFieldStrategy } from './strategies/enum';
-import { UploadFieldStrategy } from './strategies/upload';
-import { RichTextFieldStrategy } from './strategies/richtext';
-import { DefaultFieldStrategy } from './strategies/default';
+import { SpecialFieldStrategy } from './strategies/special-fields/special-field.strategy';
+import { SpecialSuffixStrategy } from './strategies/special-suffix/special-suffix.strategy';
+import { BaseTypeStrategy } from './strategies/field-types/base-type.strategy';
 
 export class FieldStrategyFactory {
   private strategies: FieldTypeStrategy[];
-  private defaultStrategy: FieldTypeStrategy;
 
   constructor() {
-    // 策略的顺序很重要，先检查特殊类型，最后是默认类型
+    // 策略的顺序很重要：
+    // 1. 先检查特殊字段名（如 user_id, category_id 等）
+    // 2. 再检查特殊后缀（如 *_image, *_content 等）
+    // 3. 最后使用基础类型策略
     this.strategies = [
-      new RelationFieldStrategy(),
-      new EnumFieldStrategy(),
-      new UploadFieldStrategy(),
-      new RichTextFieldStrategy(),
+      new SpecialFieldStrategy(),
+      new SpecialSuffixStrategy(),
+      new BaseTypeStrategy()
     ];
-    this.defaultStrategy = new DefaultFieldStrategy();
   }
 
-  getStrategy(field: PrismaDMMF.Field): FieldTypeStrategy {
+  getStrategy(field: PrismaDMMF.Field, model: string): FieldTypeStrategy {
     for (const strategy of this.strategies) {
-      if (strategy.canHandle(field)) {
+      if (strategy.canHandle(field, model)) {
         return strategy;
       }
     }
-    return this.defaultStrategy;
+    return this.strategies[this.strategies.length - 1]; // 返回基础类型策略作为默认
+  }
+
+  getFieldConfig(field: PrismaDMMF.Field, model: string) {
+    const strategy = this.getStrategy(field, model);
+    return strategy.getConfig(field, model);
   }
 }
