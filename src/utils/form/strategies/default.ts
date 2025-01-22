@@ -1,57 +1,29 @@
 import type { DMMF as PrismaDMMF } from '@prisma/generator-helper';
 import { BaseFieldStrategy } from './base';
+import { FormFieldConfig } from '../types';
 
 export class DefaultFieldStrategy extends BaseFieldStrategy {
   canHandle(field: PrismaDMMF.Field): boolean {
     return true; // 默认策略总是可以处理
   }
 
-  getConfig(field: PrismaDMMF.Field) {
-    switch (field.type) {
-      case 'Int':
-      case 'Float':
-        return {
-          component: 'Input',
-          imports: [...this.baseImports, 'Input'],
-          validation: this.createValidation(field, 'number'),
-          type: 'number',
-          extraProps: 'step="any"'
-        };
-
-      case 'Boolean':
-        return {
-          component: 'Checkbox',
-          imports: [...this.baseImports, 'Checkbox'],
-          validation: 'z.boolean().default(false)'
-        };
-
-      case 'DateTime':
-        return {
-          component: 'DateTimePicker',
-          imports: [...this.baseImports, 'DateTimePicker'],
-          validation: this.createValidation(field, 'date')
-        };
-
-      case 'String':
-        if (field.name.toLowerCase().includes('description')) {
-          return {
-            component: 'Textarea',
-            imports: [...this.baseImports, 'Textarea'],
-            validation: this.createValidation(field)
-          };
+  getConfig(field: PrismaDMMF.Field, model: string): FormFieldConfig {
+    if (field.type === 'Boolean') {
+      return {
+        component: 'Switch',
+        imports: ['Switch'],
+        validation: `z.boolean()${field.isRequired ? '' : '.optional()'}`,
+        type: 'boolean',
+        extraProps: {
+          label: field.name
         }
-        return {
-          component: 'Input',
-          imports: [...this.baseImports, 'Input'],
-          validation: this.createValidation(field)
-        };
-
-      default:
-        return {
-          component: 'Input',
-          imports: [...this.baseImports, 'Input'],
-          validation: this.createValidation(field)
-        };
+      };
     }
+
+    return {
+      component: 'Input',
+      imports: ['Input'],
+      validation: `z.string()${field.isRequired ? '' : '.optional()'}`
+    };
   }
 }

@@ -58,5 +58,5 @@ model Post {
   /// 作者ID
   authorId  Int?
   /// 文章评分
-  rating    Float
+  rating    Float    @default(0)
 }

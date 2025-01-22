@@ -9,8 +9,6 @@ import { generateEnumsIndexFile, generateModelsIndexFile } from './helpers';
 import { project } from './project';
 import removeDir from './utils/removeDir';
 
-import { genereateCrudPage } from './generate-page';
-import { generateCrudForm } from './generate-form';
 
 export async function generate(options: GeneratorOptions) {
   const outputDir = parseEnvValue(options.generator.output as EnvValue);
@@ -43,8 +41,6 @@ export async function generate(options: GeneratorOptions) {
 
   prismaClientDmmf.datamodel.models.forEach((model) => {
     generateClass(project, outputDir, model);
-    genereateCrudPage(project, outputDir, model);
-    generateCrudForm(project, outputDir, model);
   });
 
   const helpersIndexSourceFile = project.createSourceFile(

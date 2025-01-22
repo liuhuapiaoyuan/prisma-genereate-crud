@@ -1,6 +1,6 @@
 import type { DMMF as PrismaDMMF } from '@prisma/generator-helper';
 import { BaseFieldStrategy } from './base';
-import { EnumOption } from '../types';
+import { EnumOption, FormFieldConfig } from '../types';
 
 export class EnumFieldStrategy extends BaseFieldStrategy {
   canHandle(field: PrismaDMMF.Field): boolean {
@@ -8,20 +8,24 @@ export class EnumFieldStrategy extends BaseFieldStrategy {
     return documentation.includes('(') && documentation.includes('=');
   }
 
-  getConfig(field: PrismaDMMF.Field) {
-    const options = this.parseEnumComment(field.documentation!);
-    if (!options) return null;
-
+  getConfig(field: PrismaDMMF.Field, model: string): FormFieldConfig {
     return {
       component: 'Select',
-      imports: [...this.baseImports, 'Select', 'SelectTrigger', 'SelectValue', 'SelectContent', 'SelectItem'],
-      validation: this.createValidation(field),
-      extraProps: `
-        options={${JSON.stringify(options)}}
-        onValueChange={(value) => field.onChange(typeof ${options[0].value} === 'number' ? parseInt(value) : value)}
-        value={field.value?.toString()}
-      `
+      imports: ['Select'],
+      validation: `z.enum([${this.getEnumValues(field)}])${field.isRequired ? '' : '.optional()'}`,
+      extraProps: {
+        options: this.getOptions(field)
+      }
     };
+  }
+
+  private getEnumValues(field: PrismaDMMF.Field): string {
+    const options = this.parseEnumComment(field.documentation!);
+    return options.map(option => option.value).join(',');
+  }
+
+  private getOptions(field: PrismaDMMF.Field): EnumOption[] {
+    return this.parseEnumComment(field.documentation!);
   }
 
   private parseEnumComment(documentation: string): EnumOption[] | null {

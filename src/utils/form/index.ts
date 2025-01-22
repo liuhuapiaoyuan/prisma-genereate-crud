@@ -6,13 +6,13 @@ export * from './types';
 
 const factory = new FieldStrategyFactory();
 
-export function getFormFieldConfig(field: PrismaDMMF.Field): FormFieldConfig {
-  const strategy = factory.getStrategy(field);
-  return strategy.getConfig(field);
+export function getFormFieldConfig(field: PrismaDMMF.Field, model: string): FormFieldConfig {
+  const strategy = factory.getStrategy(field, model);
+  return strategy.getConfig(field, model);
 }
 
-export function generateFormField(field: PrismaDMMF.Field): string {
-  const config = getFormFieldConfig(field);
+export function generateFormField(field: PrismaDMMF.Field, model: string): string {
+  const config = getFormFieldConfig(field, model);
   if (!config) return '';
 
   const fieldLabel = field.documentation?.replace(/^\/\/\/?\s*/, '').trim() || field.name;
@@ -38,13 +38,13 @@ export function generateFormField(field: PrismaDMMF.Field): string {
   />`;
 }
 
-export function generateZodSchema(fields: PrismaDMMF.Field[]): string {
+export function generateZodSchema(fields: PrismaDMMF.Field[], model: string): string {
   const schemas = fields
     .filter(field => {
       return !(field.relationName && !field.relationFromFields?.length);
     })
     .map(field => {
-      const config = getFormFieldConfig(field);
+      const config = getFormFieldConfig(field, model);
       if (!config) return '';
       return `  ${field.name}: ${config.validation}`;
     })
@@ -57,4 +57,4 @@ ${schemas.join(',\n')}
 
 export type FormValues = z.infer<typeof formSchema>;
 `;
-  }
+}

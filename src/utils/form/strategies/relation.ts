@@ -1,25 +1,21 @@
 import type { DMMF as PrismaDMMF } from '@prisma/generator-helper';
 import { BaseFieldStrategy } from './base';
+import { FormFieldConfig } from '../types';
 
 export class RelationFieldStrategy extends BaseFieldStrategy {
   canHandle(field: PrismaDMMF.Field): boolean {
     return field.relationFromFields?.length > 0;
   }
 
-  getConfig(field: PrismaDMMF.Field) {
-    const relatedModel = field.type;
-    const relatedField = field.relationFromFields[0];
-
+  getConfig(field: PrismaDMMF.Field, model: string): FormFieldConfig {
     return {
-      name: relatedField,
-      component: 'Select',
-      imports: [...this.baseImports, 'Select', 'SelectTrigger', 'SelectValue', 'SelectContent', 'SelectItem'],
-      validation: this.createValidation(field),
-      extraProps: `
-        options={getOptions('${relatedModel.toLowerCase()}', '${field.relationToFields}','name')}
-        onValueChange={(value) => field.onChange(parseInt(value))}
-        value={field.value?.toString()}
-      `
+      component: 'RelationSelect',
+      imports: ['RelationSelect'],
+      validation: `z.string()${field.isRequired ? '' : '.optional()'}`,
+      extraProps: {
+        relationModel: field.type,
+        multiple: field.isList
+      }
     };
   }
 }

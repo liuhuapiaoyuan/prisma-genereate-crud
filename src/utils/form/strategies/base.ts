@@ -11,7 +11,7 @@ export abstract class BaseFieldStrategy implements FieldTypeStrategy {
   ];
 
   abstract canHandle(field: PrismaDMMF.Field): boolean;
-  abstract getConfig(field: PrismaDMMF.Field): FormFieldConfig;
+  abstract getConfig(field: PrismaDMMF.Field, model: string): FormFieldConfig;
 
   protected getFieldLabel(field: PrismaDMMF.Field): string {
     const documentation = field.documentation?.replace(/^\/\/\/?\s*/, '').trim() || '';
