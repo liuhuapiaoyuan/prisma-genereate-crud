@@ -8,6 +8,7 @@ import { generateHelpersIndexFile } from './generate-helpers';
 import { generateEnumsIndexFile, generateModelsIndexFile } from './helpers';
 import { project } from './project';
 import removeDir from './utils/removeDir';
+import { generateCrudForm } from './generate-form';
 
 
 export async function generate(options: GeneratorOptions) {
@@ -41,6 +42,8 @@ export async function generate(options: GeneratorOptions) {
 
   prismaClientDmmf.datamodel.models.forEach((model) => {
     generateClass(project, outputDir, model);
+    generateCrudForm(project,outputDir,model)
+
   });
 
   const helpersIndexSourceFile = project.createSourceFile(
