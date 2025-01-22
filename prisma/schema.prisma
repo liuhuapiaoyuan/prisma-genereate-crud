@@ -3,7 +3,7 @@ generator client {
 }
 
 generator crud {
-  provider = "prisma-crud"
+  provider = "node ./dist/index.js"
 }
 
 datasource db {

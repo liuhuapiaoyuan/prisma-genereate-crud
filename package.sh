@@ -2,13 +2,13 @@
 START_TIME=$SECONDS
 
 echo "Buidling package..."
-rm -r lib
+rm -r dist
 npm run build
 rm -r package
 mkdir package
 
 echo "Copying files..."
-cp -r lib package/lib
+cp -r dist package/dist
 cp package.json README.md LICENSE package
 
 echo "Making package.json public..."

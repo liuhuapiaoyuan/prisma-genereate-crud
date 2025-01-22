@@ -1,6 +1,6 @@
 {
   "name": "prisma-crud",
-  "version": "5.0.0",
+  "version": "5.0.1",
   "description": "生成CRUD",
   "repository": "https://github.com/liuhuapiaoyuan/prisma-crud",
   "bin": {
@@ -13,7 +13,7 @@
   "scripts": {
     "start": "tsc && prisma generate",
     "build": "tsc",
-    "dev":"tsc -w",
+    "dev": "tsc -w",
     "package:publish": "./package.sh && cd package && npm publish"
   },
   "author": {
@@ -30,9 +30,9 @@
   ],
   "license": "MIT",
   "dependencies": {
-    "@prisma/client": "^5.12.1",
-    "@prisma/generator-helper": "^5.12.1",
-    "@prisma/internals": "^5.12.1",
+    "@prisma/client": "^6.2.1",
+    "@prisma/generator-helper": "^6.2.1",
+    "@prisma/internals": "^6.2.1",
     "class-validator": "^0.13.2",
     "pluralize": "^8.0.0",
     "prettier": "^2.8.8",
@@ -43,7 +43,7 @@
     "@types/node": "^18.19.31",
     "@types/pluralize": "0.0.33",
     "@types/prettier": "^2.7.3",
-    "prisma": "^5.12.1",
+    "prisma": "^6.2.1",
     "typescript": "^5.4.5"
   },
   "bugs": {
