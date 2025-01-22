@@ -20,39 +20,17 @@ export async function generate(options: GeneratorOptions) {
     (it) => parseEnvValue(it.provider) === 'prisma-client-js',
   );
 
-  const prismaClientDmmf = await getDMMF({
+  const ddmf = await getDMMF({
     datamodel: options.datamodel,
     previewFeatures: prismaClientProvider?.previewFeatures,
   });
 
-  const enumNames = new Set<string>();
-  prismaClientDmmf.datamodel.enums.forEach((enumItem) => {
-    enumNames.add(enumItem.name);
-    generateEnum(project, outputDir, enumItem);
-  });
+  // 渲染创建表单，更新表单
+  // 区分： 特定命名， 基础类型
+  // 按照不同的分发，后面可以引入
+  // 表格字段的渲染
 
-  if (enumNames.size > 0) {
-    const enumsIndexSourceFile = project.createSourceFile(
-      path.resolve(outputDir, 'enums', 'index.ts'),
-      undefined,
-      { overwrite: true },
-    );
-    generateEnumsIndexFile(enumsIndexSourceFile, [...enumNames]);
-  }
 
-  prismaClientDmmf.datamodel.models.forEach((model) => {
-    generateClass(project, outputDir, model);
-    generateCrudForm(project,outputDir,model)
 
-  });
 
-  const helpersIndexSourceFile = project.createSourceFile(
-    path.resolve(outputDir, 'helpers', 'index.ts'),
-    undefined,
-    { overwrite: true },
-  );
-  generateHelpersIndexFile(helpersIndexSourceFile);
-
-  generateModelsIndexFile(prismaClientDmmf, project, outputDir);
-  await project.save();
 }
